@@ -27,9 +27,9 @@ class ListUserRemindersService {
             'dd/MM/yyyy',
         ); */
 
-        const cacheKey = `user-reminders:${user_id}`;
+        // const cacheKey = `user-reminders:${user_id}`;
 
-        let reminders = await this.cacheProvider.recover<Reminder[]>(cacheKey);
+        let reminders; //= await this.cacheProvider.recover<Reminder[]>(cacheKey);
 
         if (!reminders) {
             reminders = await this.remindersRepository.findRemindersFromDate({
@@ -39,7 +39,7 @@ class ListUserRemindersService {
 
             console.log('Buscou do banco');
 
-            await this.cacheProvider.save(cacheKey, reminders);
+            // await this.cacheProvider.save(cacheKey, reminders);
         }
 
         return reminders;

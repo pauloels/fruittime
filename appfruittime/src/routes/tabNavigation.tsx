@@ -1,6 +1,7 @@
 import React from 'react';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Icons from 'react-native-vector-icons/Feather';
 
 import Home from '../pages/Home';
 import Water from '../pages/Water';
@@ -35,17 +36,55 @@ const TabNavigation: React.FC = () => {
           fontSize: 13,
           marginLeft: 16,
         },
-        inactiveBackgroundColor: '#fafafc',
-        activeBackgroundColor: '#ebebf5',
-        inactiveTintColor: '#c1bccc',
-        activeTintColor: '#32264d',
+        inactiveBackgroundColor: '#036635',
+        activeBackgroundColor: '#036635',
+        inactiveTintColor: '#bebebe',
+        activeTintColor: '#fff',
+        keyboardHidesTabBar: true,
       }}
     >
-      <Screen name="Home" component={Home} />
+      <Screen
+        name="Home"
+        component={Home}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color, size, focused }) => {
+            return (
+              <Icons name="home" size={size} color={focused ? '#fff' : color} />
+            );
+          },
+        }}
+      />
 
-      <Screen name="Reminders" component={Reminders} />
+      <Screen
+        name="Reminders"
+        component={Reminders}
+        options={{
+          tabBarLabel: 'Lembretes',
+          tabBarIcon: ({ color, size, focused }) => {
+            return (
+              <Icons name="list" size={size} color={focused ? '#fff' : color} />
+            );
+          },
+        }}
+      />
 
-      <Screen name="Water" component={Water} />
+      <Screen
+        name="Water"
+        component={Water}
+        options={{
+          tabBarLabel: 'Água',
+          tabBarIcon: ({ color, size, focused }) => {
+            return (
+              <Icons
+                name="droplet"
+                size={size}
+                color={focused ? '#fff' : color}
+              />
+            );
+          },
+        }}
+      />
     </Navigator>
   );
 };

@@ -9,7 +9,7 @@ export default class FruitsController {
         request: Request,
         response: Response,
     ): Promise<Response> {
-        const { fruit } = request.body;
+        const { fruit } = request.query;
 
         const listFruits = container.resolve(ListFruitsService);
 

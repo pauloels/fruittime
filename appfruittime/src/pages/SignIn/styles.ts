@@ -16,6 +16,8 @@ export const ImageBackgroundStyle = styled.ImageBackground`
 
 export const ImageLogo = styled.Image`
   margin: 26px 0 64px;
+  width: 250px;
+  height: 100px;
 `;
 
 export const ForgotPassword = styled.TouchableOpacity`

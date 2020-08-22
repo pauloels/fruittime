@@ -8,6 +8,9 @@ target 'appfruittime' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
+
   target 'appfruittimeTests' do
     inherit! :complete
     # Pods for testing
