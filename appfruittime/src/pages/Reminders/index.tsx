@@ -3,6 +3,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { format, parseISO } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import { useNavigation } from '@react-navigation/native';
+import PushNotification from 'react-native-push-notification';
 
 import { useAuth } from '../../hooks/auth';
 
@@ -42,6 +43,7 @@ export interface Reminder {
   hour: string;
   avatar_url: string;
   fruits: Fruit;
+  newDate: Date;
 }
 
 const Reminders: React.FC = () => {
@@ -50,19 +52,103 @@ const Reminders: React.FC = () => {
   const [reminders, setReminders] = useState<Reminder[]>([]);
 
   useEffect(() => {
-    api.get('/reminders/me').then(response => {
-      const formatedReminders = response.data.map((reminder: Reminder) => ({
-        ...reminder,
-        date: format(parseISO(reminder.date), 'EEEE', { locale: ptBR }),
-        hour: format(parseISO(reminder.date), 'HH:mm'),
-      }));
-      setReminders(formatedReminders);
-    });
+    try {
+      api.get('/reminders/me').then(response => {
+        const formatedReminders = response.data.map((reminder: Reminder) => ({
+          ...reminder,
+          date: format(parseISO(reminder.date), 'EEEE', { locale: ptBR }),
+          hour: format(parseISO(reminder.date), 'HH:mm'),
+          newDate: new Date(parseISO(reminder.date)),
+        }));
+        setReminders(formatedReminders);
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
+
+  const handleDeleteReminder = useCallback(
+    async (item: string) => {
+      try {
+        await api.delete('/reminders/id', {
+          params: {
+            id: item,
+          },
+        });
+
+        const newReminderList = reminders.filter(i => i.id !== item);
+        setReminders(newReminderList);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [reminders],
+  );
 
   const navigateToProfile = useCallback(() => {
     navigate('Profile');
   }, [navigate]);
+
+  PushNotification.configure({
+    onRegister(token) {
+      console.log('TOKEN:', token);
+    },
+
+    onNotification(notification) {
+      console.log('NOTIFICATION:', notification);
+      // notification.finish(PushNotificationIOS.FetchResult.NoData);
+    },
+
+    permissions: {
+      alert: true,
+      badge: true,
+      sound: true,
+    },
+
+    popInitialNotification: true,
+    requestPermissions: false,
+  });
+
+  useEffect(() => {
+    const reminderDate = reminders.map(
+      r =>
+        new Date(
+          format(
+            new Date(r.newDate).setMinutes(0, 0),
+            "yyyy-MM-dd'T'HH:mm:ss'Z'",
+            {
+              locale: ptBR,
+            },
+          ),
+        ),
+    );
+
+    const newDate = new Date(
+      format(
+        new Date(Date.now()).setMinutes(
+          new Date(Date.now()).getMinutes() + 15,
+          0,
+        ),
+        "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        {
+          locale: ptBR,
+        },
+      ),
+    );
+
+    const oldDate = new Date(
+      format(
+        new Date(Date.now()).setMinutes(
+          new Date(Date.now()).getMinutes() - 15,
+          0,
+        ),
+        "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        {
+          locale: ptBR,
+        },
+      ),
+    );
+  }, [reminders]);
 
   return (
     <Container>
@@ -99,7 +185,10 @@ const Reminders: React.FC = () => {
                   name="trash-2"
                   size={18}
                   color="#fff"
-                  style={{ marginTop: -70 }}
+                  style={{ marginTop: -70, marginRight: 10 }}
+                  onPress={() => {
+                    handleDeleteReminder(reminder.id);
+                  }}
                 />
               </ReminderItems>
             </ReminderContainer>

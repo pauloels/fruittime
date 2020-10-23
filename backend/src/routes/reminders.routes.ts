@@ -31,4 +31,6 @@ remindersRouter.post(
 );
 remindersRouter.get('/me', userRemindersController.index);
 
+remindersRouter.delete('/:id', userRemindersController.delete);
+
 export default remindersRouter;

@@ -78,7 +78,7 @@ const Home: React.FC = () => {
   const { signOut, user } = useAuth();
   const { navigate, reset } = useNavigation();
 
-  const [fruit, setFruit] = useState<Fruit>([]);
+  const [fruit, setFruit] = useState<Fruit>({} as Fruit);
   const [currentWeek, setCurrentWeek] = useState<DateArray[]>([]);
   const [hourDay, setHourDay] = useState<HourArray[]>([]);
   const [recurrent, setRecurrent] = useState(false);
@@ -179,7 +179,7 @@ const Home: React.FC = () => {
 
         setFruit(response.data);
       } catch (err) {
-        console.log('warning promise');
+        setFruit([]);
       }
     }
 

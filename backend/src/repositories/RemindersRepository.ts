@@ -66,6 +66,10 @@ class RemindersRepository implements IRemindersRepository {
 
         return reminder;
     }
+
+    public async delete(id: string): Promise<void> {
+        await this.ormRepository.delete(id);
+    }
 }
 
 export default RemindersRepository;

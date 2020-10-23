@@ -1,6 +1,5 @@
 import { injectable, inject } from 'tsyringe';
 
-// import { format } from 'date-fns';
 import Reminder from '../models/Reminder';
 import IRemindersRepository from '../repositories/IRemindersRepository';
 import ICacheProvider from '../container/providers/CacheProvider/models/ICacheProvider';
@@ -21,10 +20,8 @@ class ListUserRemindersService {
     ) {}
 
     public async execute({ user_id, date }: IRequest): Promise<Reminder[]> {
-        /** const newDate = new Date();
-        const useDate = format(
-            newDate.setDate(newDate.getDate() - 1),
-            'dd/MM/yyyy',
+        /**
+
         ); */
 
         // const cacheKey = `user-reminders:${user_id}`;

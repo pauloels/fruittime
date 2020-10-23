@@ -4,23 +4,24 @@ import React from 'react';
 import { View, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native'; // deve ficar envolta de tudo
 
+import Routes from './routes';
 import AppProvider from './hooks';
 
-import Routes from './routes';
-
-const App: React.FC = () => (
-  <NavigationContainer>
-    <StatusBar
-      barStyle="light-content"
-      translucent
-      backgroundColor="transparent"
-    />
-    <AppProvider>
-      <View style={{ flex: 1 }}>
-        <Routes />
-      </View>
-    </AppProvider>
-  </NavigationContainer>
-);
+const App: React.FC = () => {
+  return (
+    <NavigationContainer>
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
+      <AppProvider>
+        <View style={{ flex: 1 }}>
+          <Routes />
+        </View>
+      </AppProvider>
+    </NavigationContainer>
+  );
+};
 
 export default App;

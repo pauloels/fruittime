@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, { useEffect, useState } from 'react';
 
 import BackgroundFetch from 'react-native-background-fetch';
 import PushNotification from 'react-native-push-notification';
@@ -10,18 +9,7 @@ import api from '../services/api';
 
 import { Reminder } from '../pages/Reminders';
 
-import TabNavigation from './tabNavigation';
-import Profile from '../pages/Profile';
-
-// import { ReminderContext } from '../pages/Reminders';
-
-const { Navigator, Screen } = createStackNavigator();
-
-const AppRoutes: React.FC = () => {
-  // const { reminders } = useContext<Reminder[]>(ReminderContext);
-
-  // console.log(reminders);
-
+const Back = () => {
   const [reminders, setReminders] = useState<Reminder[]>([]);
 
   useEffect(() => {
@@ -48,21 +36,19 @@ const AppRoutes: React.FC = () => {
     BackgroundFetch.configure(
       {
         minimumFetchInterval: 15, // fetch interval in minutes
-        forceAlarmManager: false, // <-- Set true to bypass JobScheduler.
-        stopOnTerminate: false,
-        startOnBoot: true,
-        requiredNetworkType: BackgroundFetch.NETWORK_TYPE_NONE, // Default
-        requiresCharging: false, // Default
-        requiresDeviceIdle: false, // Default
-        requiresBatteryNotLow: false, // Default
-        requiresStorageNotLow: false,
       },
 
       async taskId => {
         console.log('Received background-fetch event: ', taskId);
 
+        PushNotification.localNotification({
+          title: 'Novo lembrete fruittime',
+          message: `Hora de comer fruta`,
+          playSound: true,
+          soundName: 'default',
+        });
+
         // 3. Insert code you want to run in the background, for example:
-        /**
         try {
           api.get('/reminders/me').then(response => {
             const formatedReminders = response.data.map(
@@ -70,13 +56,7 @@ const AppRoutes: React.FC = () => {
                 ...reminder,
                 date: format(parseISO(reminder.date), 'EEEE', { locale: ptBR }),
                 hour: format(parseISO(reminder.date), 'HH:mm'),
-                newDate: new Date(
-                  format(
-                    new Date(parseISO(reminder.date)).setMinutes(0, 0),
-                    "yyyy-MM-dd'T'HH:mm:ss'Z'",
-                    { locale: ptBR },
-                  ),
-                ),
+                newDate: new Date(parseISO(reminder.date)),
               }),
             );
             setReminders(formatedReminders);
@@ -84,9 +64,6 @@ const AppRoutes: React.FC = () => {
         } catch (err) {
           console.log(err);
         }
-
-        console.log(reminders);
-         */
 
         const reminderDate = reminders.map(
           r =>
@@ -100,6 +77,8 @@ const AppRoutes: React.FC = () => {
               ),
             ),
         );
+
+        console.log(reminderDate);
 
         const newDate = new Date(
           format(
@@ -116,10 +95,10 @@ const AppRoutes: React.FC = () => {
 
         console.log(newDate);
 
-        const nowDate = new Date(
+        const oldDate = new Date(
           format(
             new Date(Date.now()).setMinutes(
-              new Date(Date.now()).getMinutes() - 1,
+              new Date(Date.now()).getMinutes() - 15,
               0,
             ),
             "yyyy-MM-dd'T'HH:mm:ss'Z'",
@@ -129,18 +108,20 @@ const AppRoutes: React.FC = () => {
           ),
         );
 
-        console.log(nowDate);
+        console.log(oldDate);
 
-        reminders.forEach(r => {
-          if (r.newDate <= newDate && r.newDate >= nowDate) {
+        for (let c = 0; c <= reminderDate.length; c = +1) {
+          const thisDate = reminderDate[c];
+
+          if (thisDate <= newDate && thisDate >= oldDate) {
             PushNotification.localNotification({
               title: 'Novo lembrete fruittime',
-              message: `Hora de comer ${r.fruit}`,
+              message: `Hora de comer fruta`,
               playSound: true,
               soundName: 'default',
             });
           }
-        });
+        }
 
         BackgroundFetch.finish(taskId);
       },
@@ -149,17 +130,6 @@ const AppRoutes: React.FC = () => {
       },
     );
   }, [reminders]);
-  return (
-    <Navigator
-      screenOptions={{
-        headerShown: false,
-        cardStyle: { backgroundColor: '#312e38' },
-      }}
-    >
-      <Screen name="TabNavigation" component={TabNavigation} />
-      <Screen name="Profile" component={Profile} />
-    </Navigator>
-  );
 };
 
-export default AppRoutes;
+export default Back;

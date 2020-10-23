@@ -26,6 +26,7 @@ import {
   UserAvatar,
   ImageBackgroundStyle,
   BackArrow,
+  IconCamera,
 } from './styles';
 import { useAuth } from '../../hooks/auth';
 
@@ -53,20 +54,22 @@ const Profile: React.FC = () => {
 
         const schema = Yup.object().shape({
           name: Yup.string().required('Nome Obrigatório'),
-          email: Yup.string()
-            .email('E-mail inválido'),
+          email: Yup.string().email('E-mail inválido'),
           old_password: Yup.string(),
           password: Yup.string().when('old_password', {
             is: val => !!val.length,
-            then: Yup.string().required('Campo obrigatório').min(6, 'Mínimo de 6 dígitos'),
+            then: Yup.string()
+              .required('Campo obrigatório')
+              .min(6, 'Mínimo de 6 dígitos'),
             otherwise: Yup.string(),
           }),
-          password_confirmation: Yup.string().when('old_password', {
-            is: val => !!val.length,
-            then: Yup.string().required('Campo obrigatório'),
-            otherwise: Yup.string(),
-          })
-          .oneOf([Yup.ref('password'), undefined], 'Confirmação incorreta')
+          password_confirmation: Yup.string()
+            .when('old_password', {
+              is: val => !!val.length,
+              then: Yup.string().required('Campo obrigatório'),
+              otherwise: Yup.string(),
+            })
+            .oneOf([Yup.ref('password'), undefined], 'Confirmação incorreta'),
         });
 
         await schema.validate(data, { abortEarly: false });
@@ -82,21 +85,20 @@ const Profile: React.FC = () => {
         const formData = {
           name,
           email,
-          ...(old_password ? {
-            old_password,
-            password,
-            password_confirmation,
-          } : {}),
+          ...(old_password
+            ? {
+                old_password,
+                password,
+                password_confirmation,
+              }
+            : {}),
         };
 
         const response = await api.put('/profile', formData);
 
         updateUser(response.data);
 
-        Alert.alert(
-          'Perfil atualizado com sucesso!',
-        );
-
+        Alert.alert('Perfil atualizado com sucesso!');
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -111,7 +113,7 @@ const Profile: React.FC = () => {
         );
       }
     },
-    [],
+    [updateUser],
   );
 
   const handleUpdateAvatar = useCallback(() => {
@@ -148,7 +150,7 @@ const Profile: React.FC = () => {
         });
       },
     );
-  }, []);
+  }, [updateUser, user.id]);
 
   return (
     <KeyboardAvoidingView
@@ -168,7 +170,9 @@ const Profile: React.FC = () => {
 
             <UserAvatarButton onPress={handleUpdateAvatar}>
               <UserAvatar source={{ uri: user.avatar_url }} />
-              <Icon name="camera" style={{ alignSelf: 'flex-end' }} />
+              <IconCamera>
+                <Icon name="camera" size={20} color="#fff" />
+              </IconCamera>
             </UserAvatarButton>
 
             <Form

@@ -80,7 +80,8 @@ export const AuthProvider: React.FC = ({ children }) => {
     setData({} as AuthState);
   }, []);
 
-  const updateUser = useCallback(async (user: User) => {
+  const updateUser = useCallback(
+    async (user: User) => {
       await AsyncStorage.setItem('@Fruittime:user', JSON.stringify(user));
 
       setData({

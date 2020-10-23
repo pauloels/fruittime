@@ -21,5 +21,5 @@ export const ImageLogo = styled.Image`
 `;
 
 export const BackArrow = styled(RectButton)`
-  margin: -50px 300px 20px 0;
+  margin: -50px 350px 10px 0;
 `;
